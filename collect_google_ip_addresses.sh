@@ -4,7 +4,7 @@
 #
 # Dynamically creates a list of IP address with their CIDR notation use by Google Corp's netblocks.
 #
-# 20210218 - Justin Steinkamp and Todd Flinders
+# 20210218 - WirelessPhreak and ToddiBear
 
 recaptcha_netblocks="_netblocks.google.com _netblocks3.google.com"
 # Collects the Google Corp IP addresses and their CIDR notation from Google's netblocks
