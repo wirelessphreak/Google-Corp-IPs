@@ -12,7 +12,7 @@ if ! command -v dig > /dev/null 2>&1; then
     exit 1
 fi
 
-google_netblocks="_netblocks.google.com _netblocks2.google.com _netblocks3.google.com"
+google_netblocks="_netblocks.google.com _netblocks2.google.com _netblocks3.google.com _spf.google.com _cloud-netblocks1.googleusercontent.com _cloud-netblocks2.googleusercontent.com _cloud-netblocks3.googleusercontent.com _cloud-netblocks4.googleusercontent.com _cloud-netblocks5.googleusercontent.com"
 ip_address_file="./GoogleIPs.txt"
 
 # Collect IPv4 addresses
