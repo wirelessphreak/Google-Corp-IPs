@@ -2,14 +2,37 @@
 
 # collect_google_ip_addresses.sh
 #
-# Dynamically creates a list of IP address with their CIDR notation use by Google Corp's netblocks.
+# Dynamically creates a list of IP addresses with their CIDR notation used by Google Corp's netblocks.
 #
 # 20210218 - WirelessPhreak and ToddiBear
 
-recaptcha_netblocks="_netblocks.google.com _netblocks3.google.com"
-# Collects the Google Corp IP addresses and their CIDR notation from Google's netblocks
-ip_addresses=`dig -t txt $recaptcha_netblocks +short | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])/[0-9][0-9]?'`
-ip_address_file=./GoogleIPs.txt
+# Check that dig is available
+if ! command -v dig > /dev/null 2>&1; then
+    echo "Error: 'dig' is not installed or not in PATH." >&2
+    exit 1
+fi
 
-# Write the Google Corp's IP addresses to a file
-echo "$ip_addresses" > $ip_address_file
+google_netblocks="_netblocks.google.com _netblocks2.google.com _netblocks3.google.com"
+ip_address_file="./GoogleIPs.txt"
+
+# Collect IPv4 addresses
+ipv4_addresses=$(dig -t txt $google_netblocks +short \
+    | grep -oE '((1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9][0-9]?|2[0-4][0-9]|25[0-5])/([0-9]|[1-2][0-9]|3[0-2])')
+
+# Collect IPv6 addresses
+ipv6_addresses=$(dig -t txt $google_netblocks +short \
+    | grep -oE '([0-9a-fA-F:]+:+[0-9a-fA-F]*)/[0-9]{1,3}')
+
+# Combine, sort, and deduplicate
+all_addresses=$(printf '%s\n%s\n' "$ipv4_addresses" "$ipv6_addresses" \
+    | grep -v '^$' | sort -u)
+
+if [ -z "$all_addresses" ]; then
+    echo "Error: No IP addresses collected. DNS queries may have failed." >&2
+    exit 1
+fi
+
+# Write the Google Corp IP addresses to a file
+echo "$all_addresses" > "$ip_address_file"
+
+echo "Collected $(echo "$all_addresses" | wc -l | tr -d ' ') IP ranges and saved to $ip_address_file"
